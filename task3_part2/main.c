@@ -21,28 +21,17 @@ int main(int argc, char const *argv[])
 {
     FILE *f = fopen("./file.txt", "r");
 
-    char **file = (char **)malloc(sizeof(char) * 256);
-    file[0] = (char *)malloc(sizeof(char) * 256);
-    file[0] = memset(file[0], 0, 256);
-    int lines = 1;
-
-    while (fgets(file[lines - 1], 250, f))
-    {
-        lines++;
-        file = (char **)realloc(file, sizeof(char) * lines * 256);
-        file[lines - 1] = (char *)malloc(sizeof(char) * 256);
-        file[lines - 1] = memset(file[lines - 1], 0, 256);
-    }
-    lines--;
-    int sum = 0;
+    char line[256] = {0};
 
     num *num_map = (num *)malloc(sizeof(num) * 1);
     size_t num_c = 1;
     star *star_map = (star *)malloc(sizeof(star) * 1);
     size_t star_c = 1;
-    for (size_t i = 0; i < lines; i++)
+
+    int i = 0;
+    while (fgets(line, 250, f))
     {
-        size_t len = strlen(file[i]);
+        size_t len = strlen(line);
         size_t num_start = 0;
         size_t num_end = 0;
         size_t star_ind = 0;
@@ -50,17 +39,17 @@ int main(int argc, char const *argv[])
         while (num_start < len)
         {
 
-            while (num_start < len && !(file[i][num_start] <= '9' && file[i][num_start] >= '0'))
+            while (num_start < len && !(line[num_start] <= '9' && line[num_start] >= '0'))
                 num_start++;
             num_end = num_start;
-            while (num_end < len && file[i][num_end] <= '9' && file[i][num_end] >= '0')
+            while (num_end < len && line[num_end] <= '9' && line[num_end] >= '0')
                 num_end++;
             size_t test = 0;
             if (num_start < len)
             {
 
                 char num_buffer[16] = {0};
-                strncpy(num_buffer, file[i] + num_start, num_end - num_start);
+                strncpy(num_buffer, line + num_start, num_end - num_start);
                 num temp = {
                     .h = i,
                     .w = num_start,
@@ -75,10 +64,7 @@ int main(int argc, char const *argv[])
 
         while (star_ind < len)
         {
-            while (star_ind < len && file[i][star_ind] != '*')
-                star_ind++;
-
-            if (star_ind < len)
+            if (line[star_ind] == '*')
             {
                 star temp = {
                     .h = i,
@@ -89,8 +75,10 @@ int main(int argc, char const *argv[])
             }
             star_ind++;
         }
+        i++;
     }
-    
+    int sum = 0;
+
     for (size_t i = 0; i < star_c - 1; i++)
     {
         size_t connected_c = 0;
@@ -110,11 +98,9 @@ int main(int argc, char const *argv[])
                 }
         }
         if (connected_c == 2)
-        {
             sum += nums[0] * nums[1];
-        }
     }
-    printf("\nsol: %d", sum);
+    printf("%d", sum);
 
     return 0;
 }
